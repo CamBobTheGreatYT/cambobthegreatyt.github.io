@@ -175,6 +175,8 @@ function beginTracking() {
         window.initialLocationMarker = null;
     }
 
+    const dummy = new SpeechSynthesisUtterance("Voice enabled");
+    speechSynthesis.speak(dummy);
 
     trackingId = navigator.geolocation.watchPosition(
         (pos) => {
@@ -305,6 +307,7 @@ function beginTracking() {
                     }
                 }
                 updateInstructionList();
+                updateNextInstruction();
                 updateSpeedLimitDisplay(); // ⬅️ Refresh speed limit when step changes
             }
 
@@ -353,7 +356,8 @@ function beginTracking() {
                     } else {
                         const timeOffRoute = Date.now() - window.offRouteStart;
                         if (timeOffRoute > 5000) {
-                            console.log("Off route! Recalculating...");
+                            //console.log("Off route! Recalculating...");
+                            speechSynthesis.speak(new SpeechSynthesisUtterance("Recalculating route"));
                             window.offRouteStart = null;
                             routeToDestination(userLocation);
                             return;
@@ -504,9 +508,9 @@ function updateSpeedLimitDisplay() {
     // 🔄 If OSRM doesn't give speed limits, simulate basic logic:
     if (!speedLimit && step.name) {
         const name = step.name;
-        if (name.match(/I-|Interstate|US-|Route \d+/)) speedLimit = 65;
-        else if (name.match(/Ave|St|Blvd|Dr|Rd/)) speedLimit = 35;
-        else speedLimit = null; // Unknown road type
+        //if (name.match(/I-|Interstate|US-|Route \d+/)) speedLimit = 65;
+        //else if (name.match(/Ave|St|Blvd|Dr|Rd/)) speedLimit = 35;
+        speedLimit = 0; // Unknown road type
     }
 
     if (speedLimit) {

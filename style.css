@@ -13,10 +13,11 @@ body {
 
 /* MAP */
 #map {
-    width: 100vw;
+    width: 150vw;
     height: 100vh;
     position: relative;
     z-index: 1;
+    left: -25vw;
 }
 
 /* Search Bar */
@@ -85,7 +86,7 @@ body {
     border-radius: 0.5em;
     box-shadow: 0 0.3em 0.6em rgba(0, 0, 0, 0.1);
     max-width: 300px;
-    z-index: 20;
+    z-index: 200;
     font-size: 1rem;
     padding: 1em;
     padding-right: 1em;
