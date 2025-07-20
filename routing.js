@@ -16,7 +16,7 @@ navigator.geolocation.getCurrentPosition(
             iconSize: [20, 20]
         });
 
-        L.marker(userLocation, { icon: userIcon })
+        window.initialLocationMarker = L.marker(userLocation, { icon: userIcon })
             .addTo(map)
             //.bindPopup("You are here")
             //.openPopup();
@@ -170,9 +170,23 @@ function checkHighwayRatio() {
 function beginTracking() {
     if (trackingId) return;
 
+    if (window.initialLocationMarker) {
+        map.removeLayer(window.initialLocationMarker);
+        window.initialLocationMarker = null;
+    }
+
+
     trackingId = navigator.geolocation.watchPosition(
         (pos) => {
             userLocation = [pos.coords.latitude, pos.coords.longitude];
+
+            const buffer = 0.005; // ~0.5km
+
+            const bounds = L.latLngBounds(
+                [userLocation[0] - buffer, userLocation[1] - buffer],
+                [userLocation[0] + buffer, userLocation[1] + buffer]
+            );
+            map.setMaxBounds(bounds.pad(3)); // Pad by 3x to preload a larger tile area
 
             // Zoom and center
             map.setView(userLocation, 16);

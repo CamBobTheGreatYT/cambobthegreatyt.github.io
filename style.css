@@ -77,7 +77,8 @@ body {
 /* Instruction Panel */
 #instructionPanel {
     position: absolute;
-    bottom: 10vh;
+    bottom: 25%;
+    transform: translateY(50%);
     left: 2vw;
     background: white;
     padding: 1em;
@@ -87,7 +88,7 @@ body {
     z-index: 20;
     font-size: 1rem;
     padding: 1em;
-    padding-right: 1em; 
+    padding-right: 1em;
 }
 
 #instructionList {
