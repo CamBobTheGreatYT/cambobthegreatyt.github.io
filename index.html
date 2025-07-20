@@ -11,24 +11,33 @@
         
     </head>
     <body>
-        <div id="searchBar">
-            <input type="text" id="searchInput" placeholder="Enter destination..." />
-            <button onclick="routeToDestination()">Go</button>
+        <div id="topBar">
+            <div id="searchBar">
+                <div class="search-group">
+                    <input id="searchInput" type="text" placeholder="Enter destination..." />
+                    <button id="searchGo" onclick="routeToDestination()">Go</button>
+                </div>
+            </div>
+            <div id="navInstruction">
+                <i class="fas fa-arrow-up"></i>
+                <span id="navText">Next turn: --</span>
+            </div>
+
         </div>
-        <div id="navInstruction" class="nav-box">
-            <i class="fas fa-arrow-right"></i>
-            <span id="navText">Enter Destination</span>
-        </div>
+
         <div id="instructionPanel" class="instruction-panel">
             <ol id="instructionList"></ol>
-            <button id="endBtn" onclick="clearRoute()" class="end-button" style="display:none;">End Route</button>
+            <button id="endBtn" onclick="clearRoute()" class="corner-close" style="display:none;">
+                <i class="fas fa-times"></i>
+            </button>
+
         </div>
 
         <div id="map"></div>
 
         <div id="compassContainer">
             <div id="compass"><i class="fas fa-location-arrow"></i></div>
-            <button id="toggleRotation">Rotation On</button>
+            <!--<button id="toggleRotation">Rotation On</button>!-->
         </div>
 
         <div id="etaPanel" class="eta-panel">

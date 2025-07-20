@@ -1,15 +1,15 @@
-compass probably doesnt turn as intended currently 
-
-the blue route line doesnt follow the contour of the road, it is straight from turn to turn -- handled
-
-also need to find out if I can make a time to destination thing -- handled
-
 
 ETA doesn't seem to be updating properly though -- maybe if the duration left updates properly set the ETA to be equal to the current time plus the duration left. make sure to account for a trip going into the next day
 - might be because i havent moved at all and ig it only updates when the user moves
 
-ETA calculation still doesn't quite line up with the phones calculation -- handled
-
 havent added cacheing and offline support for areas with bad service
 
 need to verify that the next moves and everything that is supposed to update as the user moves actually updates properly
+
+compass might be fixed -- turns properly, but can be better. doesn't point to true north on startup and when rotation is disabled. doesnt show if rotation is enabled or not.
+
+need to make upcoming manovers panel collapsable so people dont think the x button is to close it since that ends the navigation
+
+should add a button to center the camera view on the user if it were to leave. or maybe it doesnt let you leave if you are moving. idk yet we'll have to seem
+
+need to go out and do an actual test of it soon. maybe tomorrow morning

@@ -10,10 +10,16 @@ let hwyRt = false;
 navigator.geolocation.getCurrentPosition(
     (pos) => {
         userLocation = [pos.coords.latitude, pos.coords.longitude];
-        L.marker(userLocation)
+
+        const userIcon = L.divIcon({
+            className: 'user-location-icon',
+            iconSize: [20, 20]
+        });
+
+        L.marker(userLocation, { icon: userIcon })
             .addTo(map)
-            .bindPopup("You are here")
-            .openPopup();
+            //.bindPopup("You are here")
+            //.openPopup();
         map.setView(userLocation, 13);
     },
     (err) => {
@@ -109,7 +115,7 @@ async function routeToDestination(customOrigin = null) {
     if (!trackingId && !document.getElementById("startBtn")) {
         const startBtn = document.createElement("button");
         startBtn.id = "startBtn";
-        startBtn.textContent = "Start Route";
+        startBtn.innerHTML = `<i class="fas fa-arrow-right"></i>`;
         startBtn.className = "start-button";
         startBtn.onclick = beginTracking;
         document.getElementById("instructionPanel").appendChild(startBtn);
@@ -121,26 +127,31 @@ async function routeToDestination(customOrigin = null) {
 function checkHighwayRatio() {
     if (!routeSteps || routeSteps.length === 0) return;
 
-    const highwayKeywords = ["I-", "Interstate", "Hwy", "Highway", "US-", "Route "];
-    let highwayCount = 0;
+    const highwayKeywords = ["I-", "Interstate", "Hwy", "Highway", "US-", "Route", "i-", "interstate", "hwy", "highway", "us-", "route"];
+    let highwayMiles = 0;
+    let localMiles = 0;
 
     routeSteps.forEach((step) => {
         const name = step.name || "";
+        const miles = step.distance / 1609.34;
+
         if (highwayKeywords.some(keyword => name.includes(keyword))) {
-            highwayCount++;
+            highwayMiles += miles * 2;
+        } else {
+            localMiles += miles;
         }
     });
 
-    const ratio = (highwayCount / routeSteps.length * 100).toFixed(1);
-    console.log(`Highway steps: ${highwayCount}/${routeSteps.length} (${ratio}%)`);
+    const totalMiles = highwayMiles + localMiles;
+    const highwayRatio = totalMiles > 0 ? (highwayMiles / totalMiles * 100).toFixed(1) : 0;
 
-    if (ratio > 50) {
-        //alert("Most of your route appears to be on highway segments.");
-        hwyRt = true;
-    } //else {
-        //alert("Your route is primarily on non-highway or local roads.");
-    //}
+    //alert(`Highway distance: ${highwayMiles.toFixed(2)} mi`);
+    //alert(`Local distance: ${localMiles.toFixed(2)} mi`);
+    //alert(`Highway ratio: ${highwayRatio}%`);
+
+    hwyRt = highwayRatio > 25; //this was originally 50% changed to 25 so that it would actually say going to ny is on the highway and give a correct time estimate
 }
+
 
 
 
@@ -156,22 +167,38 @@ function beginTracking() {
             map.setView(userLocation, 16);
 
             // Live marker
+            const userIcon = L.divIcon({
+                className: 'user-location-icon',
+                iconSize: [20, 20]
+            });
+
             if (!window.liveMarker) {
-                window.liveMarker = L.marker(userLocation).addTo(map);
+                window.liveMarker = L.marker(userLocation, { icon: userIcon }).addTo(map);
             } else {
                 window.liveMarker.setLatLng(userLocation);
             }
 
+
             // Compass rotation setup
             if (typeof window.rotateMap === "undefined") {
                 window.rotateMap = true;
-                document.getElementById("toggleRotation").onclick = () => {
+
+                const compassEl = document.getElementById("compass");
+
+                compassEl.onclick = () => {
                     window.rotateMap = !window.rotateMap;
-                    document.getElementById("toggleRotation").textContent = window.rotateMap ? "Rotation On" : "Rotation Off";
-                    document.getElementById("map").style.transform = "rotate(0deg)";
-                    document.getElementById("compass").style.transform = "rotate(0deg)";
+
+                    const label = window.rotateMap ? "Rotation On" : "Rotation Off";
+                    compassEl.title = label;
+
+                    // Reset any existing transform when toggled off
+                    if (!window.rotateMap) {
+                        document.getElementById("map").style.transform = "rotate(0deg)";
+                        compassEl.style.transform = "rotate(0deg)";
+                    }
                 };
             }
+
 
             if (window.lastLocation) {
                 const deltaLat = userLocation[0] - window.lastLocation[0];
@@ -182,7 +209,7 @@ function beginTracking() {
                 if (window.rotateMap) {
                     document.getElementById("map").style.transform = `rotate(${-headingDeg}deg)`;
                 }
-                document.getElementById("compass").style.transform = `rotate(${headingDeg}deg)`;
+                document.getElementById("compass").style.transform = `rotate(${headingDeg - 45}deg)`;
             }
             window.lastLocation = [...userLocation];
 
@@ -200,20 +227,57 @@ function beginTracking() {
                     L.latLng(target[1], target[0])
                 );
 
+                if (!window.oneMileAlerted && distanceToTurn > 1550 && distanceToTurn < 1650) {
+                    const text = nextStep.maneuver.instruction || `${nextStep.maneuver.type} on ${nextStep.name || "road"}`;
+                    speechSynthesis.speak(new SpeechSynthesisUtterance(`In one mile, ${text}`));
+                    window.oneMileAlerted = true;
+                }
+
                 const prevDist = stepIndex === 0 ? 9999 : routeSteps[stepIndex - 1].distance;
                 const threshold = prevDist > 1609 ? 1609 : 321.87;
 
                 if (!alerted && distanceToTurn < threshold + 50 && distanceToTurn > threshold - 50) {
-                    const text = nextStep.maneuver.instruction || `${nextStep.maneuver.type} on ${nextStep.name || "road"}`;
-                    speechSynthesis.speak(new SpeechSynthesisUtterance(`Upcoming: ${text}`));
+                    const step = routeSteps[stepIndex];
+                    const text = step.maneuver.instruction || `${step.maneuver.type} on ${step.name || "road"}`;
+                    const distanceFormatted = formatDistance(distanceToTurn);
+                    const spokenText = `Upcoming in ${distanceFormatted}: ${text}`;
+
+                    speechSynthesis.speak(new SpeechSynthesisUtterance(spokenText));
                     alerted = true;
                 }
+
 
                 if (distanceToTurn < 30.48) {
                     stepIndex++;
                     alerted = false;
+                    window.oneMileAlerted = false;
                     updateNextInstruction();
                     updateInstructionList();
+
+                    if (stepIndex < routeSteps.length) {
+                        const nextStep = routeSteps[stepIndex];
+                        const text = nextStep.maneuver.instruction || `${nextStep.maneuver.type} on ${nextStep.name || "road"}`;
+
+                        // Calculate distance to next step
+                        let distanceToNext = nextStep.distance;
+                        if (userLocation && nextStep.maneuver.location) {
+                            const maneuverCoord = L.latLng(nextStep.maneuver.location[1], nextStep.maneuver.location[0]);
+                            const userCoord = L.latLng(userLocation[0], userLocation[1]);
+                            distanceToNext = map.distance(userCoord, maneuverCoord);
+                        }
+                        const distanceFormatted = formatDistance(distanceToNext);
+
+                        // Optional: estimate time based on assumed speed
+                        const avgSpeed = window.assumedSpeed || window.avgRouteSpeed || 13.4; // meters/sec
+                        const secondsToNext = distanceToNext / avgSpeed;
+                        const minutes = Math.round(secondsToNext / 60);
+
+                        //const timeText = minutes > 0
+                        //    ? `in about ${minutes} minute${minutes > 1 ? "s" : ""}`
+                        //    : `in less than a minute`;
+                        const spokenText = `Next: ${text}, ${distanceFormatted}`;
+                        speechSynthesis.speak(new SpeechSynthesisUtterance(spokenText));
+                    }
                 }
 
                 updateSpeedLimitDisplay(); // ⬅️ Refresh speed limit when step changes
@@ -300,8 +364,16 @@ function updateNextInstruction() {
     const text = step.maneuver.instruction || `${step.maneuver.type} on ${step.name || "road"}`;
     const type = step.maneuver.type;
 
-    document.getElementById("navText").textContent = `Next turn: ${text}`;
+    // 🔁 Live distance calculation
+    let distance = step.distance;
+    if (userLocation && step.maneuver.location) {
+        const maneuverCoord = L.latLng(step.maneuver.location[1], step.maneuver.location[0]);
+        const userCoord = L.latLng(userLocation[0], userLocation[1]);
+        distance = map.distance(userCoord, maneuverCoord);
+    }
+    const distanceFormatted = formatDistance(distance);
 
+    document.getElementById("navText").textContent = `Next turn: ${text}`;
     const iconMap = {
         left: "fa-arrow-left",
         right: "fa-arrow-right",
@@ -313,8 +385,10 @@ function updateNextInstruction() {
     const iconClass = iconMap[type] || "fa-arrow-up";
     document.querySelector("#navInstruction i").className = `fas ${iconClass}`;
 
-    speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+    // 🎙️ Updated spoken instruction
+    speechSynthesis.speak(new SpeechSynthesisUtterance(`In ${distanceFormatted}, ${text}`));
 }
+
 
 // Format distance
 function formatDistance(meters) {

@@ -20,23 +20,59 @@ body {
 }
 
 /* Search Bar */
-#searchBar {
+#topBar {
     position: absolute;
     top: 2vh;
     left: 50%;
     transform: translateX(-50%);
-    width: 60vw;
-    max-width: 400px;
     z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90vw;
+    max-width: 500px;
+    gap: 0.8em;
+}
+
+#searchBar {
+    width: 100%;
+}
+
+.search-group {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
 }
 
 #searchInput {
-    width: 100%;
+    flex: 1;
     padding: 0.6em;
     font-size: 1em;
     border-radius: 0.4em;
     border: 1px solid #ccc;
 }
+
+#searchGo {
+    padding: 0.6em 1em;
+    font-size: 1em;
+    background: #0078D7;
+    color: white;
+    border: none;
+    border-radius: 0.4em;
+    cursor: pointer;
+}
+
+#navInstruction {
+    background: white;
+    padding: 0.5em 1em;
+    border-radius: 0.5em;
+    box-shadow: 0 0.3em 0.6em rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    text-align: center;
+    width: 100%;
+}
+
+
 
 /* Instruction Panel */
 #instructionPanel {
@@ -50,6 +86,15 @@ body {
     max-width: 300px;
     z-index: 20;
     font-size: 1rem;
+    padding: 1em;
+    padding-right: 1em; 
+}
+
+#instructionList {
+    padding: 1em;
+}
+#instructionList li{
+    margin-bottom: 0.6em;
 }
 
 /* ETA Panel */
@@ -74,15 +119,26 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #f0f0f0;
     gap: 0.6em;
     z-index: 20;
 }
 
 #compass {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle at center, #e0f7ff 0%, #0078D7 100%);
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 6px rgba(0, 120, 215, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.5em;
+    transform-origin: center;
+    transition: transform 0.3s ease-out;
 }
+
 
 #toggleRotation {
     padding: 0.4em 0.8em;
@@ -142,10 +198,65 @@ body {
     z-index: 20;
 }
 
+.start-button {
+    width: 2.2em;
+    height: 2.2em;
+    font-size: 1.2em;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
 .end-button {
     background: #D70022;
     display: none;
 }
+
+.corner-close {
+    position: absolute;
+    bottom: 0.5em;
+    right: 0.5em;
+    width: 2.2em;
+    height: 2.2em;
+    background: #D70022;
+    color: white;
+    font-size: 1em;
+    border: none;
+    border-radius: 0.4em;
+    box-shadow: 0 0.2em 0.5em rgba(0,0,0,0.2);
+    cursor: pointer;
+    z-index: 30;
+}
+
+.user-location-icon {
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at center, #00aaff 0%, #0077cc 100%);
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 6px rgba(0, 170, 255, 0.6);
+}
+
+.user-location-icon::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 170, 255, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.7); opacity: 0.5; }
+    50% { transform: scale(1.2); opacity: 0.2; }
+    100% { transform: scale(0.7); opacity: 0.5; }
+}
+
 
 /* Responsive for Narrow Screens */
 @media screen and (max-width: 500px) {
@@ -185,5 +296,19 @@ body {
         padding: 0.6em 1em;
         right: 5vw;
         bottom: 1vh;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .search-group {
+        flex-direction: column;
+    }
+
+    #searchGo {
+        width: 100%;
+    }
+
+    #navInstruction {
+        font-size: 0.85rem;
     }
 }
