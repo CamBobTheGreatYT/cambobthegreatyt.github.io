@@ -8,7 +8,7 @@ need to verify that the next moves and everything that is supposed to update as 
 
 compass might be fixed -- turns properly, but can be better. doesn't point to true north on startup and when rotation is disabled. doesnt show if rotation is enabled or not.
 
-need to make upcoming manovers panel collapsable so people dont think the x button is to close it since that ends the navigation
+need to make upcoming manovers panel collapsable so people dont think the x button is to close it since that ends the navigation -- ahandled
 
 should add a button to center the camera view on the user if it were to leave. or maybe it doesnt let you leave if you are moving. idk yet we'll have to seem
 

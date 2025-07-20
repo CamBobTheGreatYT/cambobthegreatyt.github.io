@@ -220,7 +220,7 @@ function beginTracking() {
                 if (window.rotateMap) {
                     document.getElementById("map").style.transform = `rotate(${-headingDeg}deg)`;
                 }
-                document.getElementById("compass").style.transform = `rotate(${headingDeg - 45}deg)`;
+                document.getElementById("compass").style.transform = `rotate(${-headingDeg - 45}deg)`;
             }
             window.lastLocation = [...userLocation];
 
@@ -290,7 +290,7 @@ function beginTracking() {
                         speechSynthesis.speak(new SpeechSynthesisUtterance(spokenText));
                     }
                 }
-
+                updateInstructionList();
                 updateSpeedLimitDisplay(); // ⬅️ Refresh speed limit when step changes
             }
 
@@ -372,7 +372,7 @@ function updateNextInstruction() {
     }
 
     const step = routeSteps[stepIndex];
-    const text = step.maneuver.instruction || `${step.maneuver.type} on ${step.name || "road"}`;
+    //const text = step.maneuver.instruction || `${step.maneuver.type} on ${step.name || "road"}`;
     const type = step.maneuver.type;
 
     // 🔁 Live distance calculation
@@ -384,7 +384,9 @@ function updateNextInstruction() {
     }
     const distanceFormatted = formatDistance(distance);
 
-    document.getElementById("navText").textContent = `Next turn: ${text}`;
+    const text = step.maneuver.instruction || `${step.maneuver.type} on ${step.name || "road"}`;
+    document.getElementById("navText").textContent = `In ${distanceFormatted}: ${text}`;
+    
     const iconMap = {
         left: "fa-arrow-left",
         right: "fa-arrow-right",
