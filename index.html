@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Radar + Routing Viewer</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <link rel="stylesheet" href="style.css">
+
+        
+    </head>
+    <body>
+        <div id="searchBar">
+            <input type="text" id="searchInput" placeholder="Enter destination..." />
+            <button onclick="routeToDestination()">Go</button>
+        </div>
+        <div id="navInstruction" class="nav-box">
+            <i class="fas fa-arrow-right"></i>
+            <span id="navText">Enter Destination</span>
+        </div>
+        <div id="instructionPanel" class="instruction-panel">
+            <ol id="instructionList"></ol>
+            <button id="endBtn" onclick="clearRoute()" class="end-button" style="display:none;">End Route</button>
+        </div>
+
+        <div id="map"></div>
+
+        <div id="compassContainer">
+            <div id="compass"><i class="fas fa-location-arrow"></i></div>
+            <button id="toggleRotation">Rotation On</button>
+        </div>
+
+        <div id="etaPanel" class="eta-panel">
+            ETA: <span id="etaText">Calculating...</span><br>
+            Duration Left: <span id="durationText">--</span><br>
+            Miles Left: <span id="distanceText">--</span>
+        </div>
+
+        <div id="speedLimitSign" class="speed-sign">
+            <span id="speedLimitValue">--</span>
+            <div class="mph-label">MPH</div>
+        </div>
+
+
+
+
+        
+
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script src="radar.js"></script>
+        <script src="routing.js"></script>
+    </body>
+</html>
