@@ -28,6 +28,16 @@ navigator.geolocation.getCurrentPosition(
     }
 );
 
+document.getElementById("collapseBtn").onclick = () => {
+    const panel = document.getElementById("instructionPanel");
+    panel.classList.toggle("collapsed");
+
+    const icon = document.querySelector("#collapseBtn i");
+    icon.className = panel.classList.contains("collapsed")
+        ? "fas fa-chevron-right"
+        : "fas fa-chevron-left";
+};
+
 
 // Route calculation
 async function routeToDestination(customOrigin = null) {
@@ -122,6 +132,7 @@ async function routeToDestination(customOrigin = null) {
     }
 
     document.getElementById("endBtn").style.display = "block";
+
 }
 
 function checkHighwayRatio() {
