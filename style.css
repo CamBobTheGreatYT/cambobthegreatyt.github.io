@@ -1,178 +1,189 @@
-body, html {
+/* Global Reset */
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    height: 100%;
 }
 
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    overflow: hidden;
+}
+
+/* MAP */
 #map {
+    width: 100vw;
     height: 100vh;
-    transform-origin: center center;
-    transition: transform 0.4s ease;
+    position: relative;
+    z-index: 1;
 }
 
+/* Search Bar */
 #searchBar {
     position: absolute;
-    top: 5%;
+    top: 2vh;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1000;
-    background: white;
-    padding: 8px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    width: 60vw;
+    max-width: 400px;
+    z-index: 20;
 }
 
 #searchInput {
-    width: 300px;
+    width: 100%;
+    padding: 0.6em;
+    font-size: 1em;
+    border-radius: 0.4em;
+    border: 1px solid #ccc;
 }
 
-.nav-box {
+/* Instruction Panel */
+#instructionPanel {
     position: absolute;
-    top: 15%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
+    bottom: 10vh;
+    left: 2vw;
     background: white;
-    padding: 8px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.3);
-}
-.nav-box i {
-    font-size: 32px;
-}
-
-.instruction-panel {
-    position: fixed;
-    bottom: 5%;
-    left: 5%;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 10px 12px;
-    border-radius: 6px;
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-    font-size: 18px;
-    font-weight: 600;
+    padding: 1em;
+    border-radius: 0.5em;
+    box-shadow: 0 0.3em 0.6em rgba(0, 0, 0, 0.1);
     max-width: 300px;
-    z-index: 9999;
-    backdrop-filter: blur(4px);
-    color: #222;
-    text-align: left;
+    z-index: 20;
+    font-size: 1rem;
 }
 
-#instructionList {
-    margin: 0;
-    padding-left: 20px;
-    list-style-type: decimal;
+/* ETA Panel */
+.eta-panel {
+    position: absolute;
+    bottom: 2vh;
+    right: 2vw;
+    background: white;
+    padding: 1em;
+    border-radius: 0.5em;
+    box-shadow: 0 0.3em 0.6em rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    max-width: 280px;
+    z-index: 20;
 }
 
-.end-button {
-    margin-top: 12px;
-    background: #e14;
-    color: white;
-    padding: 8px 14px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    width: 100%;
-}
-.end-button:hover {
-    background: #c00;
-}
-
-.start-button {
-    margin-top: 12px;
-    background: #1a9;
-    color: white;
-    padding: 8px 14px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    width: 100%;
-}
-
-.start-button:hover {
-    background: #118866;
-}
-
+/* Compass + Rotation Button */
 #compassContainer {
-    position: fixed;
-    bottom: 5%;
-    right: 5%;
-    z-index: 10000;
+    position: absolute;
+    top: 2vh;
+    right: 2vw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    background-color: #f0f0f0;
+    gap: 0.6em;
+    z-index: 20;
 }
 
 #compass {
-    width: 5%;
-    height: 5%;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform-origin: center center;
-    transition: transform 0.4s ease;
-    font-size: 24px;
-    color: #0077ff;
+    width: 40px;
+    height: 40px;
 }
 
 #toggleRotation {
-    background: #444;
+    padding: 0.4em 0.8em;
+    font-size: 0.9em;
+    background: #0078D7;
     color: white;
     border: none;
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 14px;
+    border-radius: 0.3em;
     cursor: pointer;
 }
 
-#toggleRotation:hover {
-    background: #222;
-}
-
-.eta-panel {
-    position: fixed;
-    bottom: 15%;
-    right: 5%;
-    background: rgba(255,255,255,0.95);
-    padding: 12px 16px;
-    border-radius: 10px;
-    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-    font-size: 16px;
-    color: #222;
-    z-index: 9999;
-}
-
+/* Speed Limit Badge */
 .speed-sign {
-    position: fixed;
-    top: 5%;
-    right: 5%;
-    width: 7%;
-    height: 9%;
+    position: absolute;
+    bottom: 22vh;
+    right: 2vw;
+    width: 14vw;
+    max-width: 70px;
+    aspect-ratio: 7 / 9;
     background: white;
-    border: 2px solid #333;
-    border-radius: 8px;
+    border: 0.2em solid #333;
+    border-radius: 0.5em;
     text-align: center;
     font-family: 'Arial', sans-serif;
-    box-shadow: 0 8px 12px rgba(0,0,0,0.2);
-    z-index: 9999;
+    box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.2);
+    z-index: 20;
+    display: none;
 }
 
 #speedLimitValue {
-    font-size: 28px;
+    font-size: 2em;
     font-weight: bold;
-    margin-top: 16px;
-    display: block;
+    margin-top: 0.6em;
     color: #111;
 }
 
 .mph-label {
-    font-size: 14px;
-    margin-top: 4px;
+    font-size: 1em;
+    margin-top: 0.3em;
     color: #555;
+}
+
+/* Route Buttons */
+.start-button,
+.end-button {
+    position: absolute;
+    bottom: 2vh;
+    right: 2vw;
+    padding: 0.8em 1.2em;
+    background: #0078D7;
+    color: white;
+    font-size: 1em;
+    border: none;
+    border-radius: 0.4em;
+    box-shadow: 0 0.3em 0.6em rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 20;
+}
+
+.end-button {
+    background: #D70022;
+    display: none;
+}
+
+/* Responsive for Narrow Screens */
+@media screen and (max-width: 500px) {
+    #searchBar {
+        width: 80vw;
+    }
+
+    #instructionPanel {
+        bottom: 12vh;
+        width: 85vw;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .eta-panel {
+        width: 80vw;
+        right: 50%;
+        transform: translateX(-50%);
+        bottom: 1vh;
+        font-size: 0.85rem;
+    }
+
+    .speed-sign {
+        width: 18vw;
+        bottom: 28vh;
+        right: 5vw;
+    }
+
+    #toggleRotation {
+        font-size: 0.85em;
+        padding: 0.4em 0.6em;
+    }
+
+    .start-button,
+    .end-button {
+        font-size: 0.9em;
+        padding: 0.6em 1em;
+        right: 5vw;
+        bottom: 1vh;
+    }
 }
