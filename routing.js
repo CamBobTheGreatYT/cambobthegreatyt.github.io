@@ -280,6 +280,7 @@ function beginTracking() {
                     window.oneMileAlerted = false;
                     updateNextInstruction();
                     updateInstructionList();
+                    speechSynthesis.speak(new SpeechSynthesisUtterance(`In ${distanceFormatted}, ${text}`));
 
                     if (stepIndex < routeSteps.length) {
                         const nextStep = routeSteps[stepIndex];
@@ -417,7 +418,7 @@ function updateNextInstruction() {
     document.querySelector("#navInstruction i").className = `fas ${iconClass}`;
 
     // 🎙️ Updated spoken instruction
-    speechSynthesis.speak(new SpeechSynthesisUtterance(`In ${distanceFormatted}, ${text}`));
+    //speechSynthesis.speak(new SpeechSynthesisUtterance(`In ${distanceFormatted}, ${text}`));
 }
 
 
