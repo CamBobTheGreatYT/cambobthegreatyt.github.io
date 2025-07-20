@@ -273,19 +273,50 @@ function beginTracking() {
 
                 if (!window.oneMileAlerted && distanceToTurn > 1550 && distanceToTurn < 1650) {
                     const text = nextStep.maneuver.instruction || `${nextStep.maneuver.type} on ${nextStep.name || "road"}`;
-                    speechSynthesis.speak(new SpeechSynthesisUtterance(`In one mile, ${text}`));
+                    const step = routeSteps[stepIndex];
+                    const modifier = step.maneuver.modifier || "";
+                    const roadName = step.name || "the road";
+
+                    let directionText = "";
+                    switch (modifier) {
+                        case "left": directionText = "Turn left"; break;
+                        case "right": directionText = "Turn right"; break;
+                        case "straight": directionText = "Go straight"; break;
+                        case "slight left": directionText = "Bear left"; break;
+                        case "slight right": directionText = "Bear right"; break;
+                        case "uturn": directionText = "Make a U-turn"; break;
+                        default: directionText = step.maneuver.instruction || `${step.maneuver.type} on ${roadName}`;
+                    }
+
+                    const distanceFormatted = formatDistance(distanceToTurn);
+                    const spokenText = `${directionText} onto ${roadName}`;
+                    speechSynthesis.speak(new SpeechSynthesisUtterance(`In one mile, ${spokenText}`));
                     window.oneMileAlerted = true;
                 }
+
+
 
                 const prevDist = stepIndex === 0 ? 9999 : routeSteps[stepIndex - 1].distance;
                 const threshold = prevDist > 1609 ? 1609 : 321.87;
 
                 if (!alerted && distanceToTurn < threshold + 100 && distanceToTurn > threshold - 100) {
                     const step = routeSteps[stepIndex];
-                    const text = step.maneuver.instruction || `${step.maneuver.type} on ${step.name || "road"}`;
-                    const distanceFormatted = formatDistance(distanceToTurn);
-                    const spokenText = `Upcoming in ${distanceFormatted}: ${text}`;
+                    const modifier = step.maneuver.modifier || "";
+                    const roadName = step.name || "the road";
 
+                    let directionText = "";
+                    switch (modifier) {
+                        case "left": directionText = "Turn left"; break;
+                        case "right": directionText = "Turn right"; break;
+                        case "straight": directionText = "Go straight"; break;
+                        case "slight left": directionText = "Bear left"; break;
+                        case "slight right": directionText = "Bear right"; break;
+                        case "uturn": directionText = "Make a U-turn"; break;
+                        default: directionText = step.maneuver.instruction || `${step.maneuver.type} on ${roadName}`;
+                    }
+
+                    const distanceFormatted = formatDistance(distanceToTurn);
+                    const spokenText = `In ${distanceFormatted}, ${directionText} onto ${roadName}`;
                     speechSynthesis.speak(new SpeechSynthesisUtterance(spokenText));
                     alerted = true;
                 }
@@ -299,7 +330,26 @@ function beginTracking() {
                     updateInstructionList();
 
                     if (stepIndex < routeSteps.length) {
-                        const nextStep = routeSteps[stepIndex];
+                        const step = routeSteps[stepIndex];
+                        const modifier = step.maneuver.modifier || "";
+                        const roadName = step.name || "the road";
+
+                        let directionText = "";
+                        switch (modifier) {
+                            case "left": directionText = "Turn left"; break;
+                            case "right": directionText = "Turn right"; break;
+                            case "straight": directionText = "Go straight"; break;
+                            case "slight left": directionText = "Bear left"; break;
+                            case "slight right": directionText = "Bear right"; break;
+                            case "uturn": directionText = "Make a U-turn"; break;
+                            default: directionText = step.maneuver.instruction || `${step.maneuver.type} on ${roadName}`;
+                        }
+
+                        const distanceFormatted = formatDistance(distanceToTurn);
+                        const spokenText = `Next, In ${distanceFormatted}, ${directionText} onto ${roadName}`;
+                        speechSynthesis.speak(new SpeechSynthesisUtterance(spokenText));
+
+                        /*const nextStep = routeSteps[stepIndex];
                         const text = nextStep.maneuver.instruction || `${nextStep.maneuver.type} on ${nextStep.name || "road"}`;
 
                         // Calculate distance to next step
@@ -320,7 +370,7 @@ function beginTracking() {
                         //    ? `in about ${minutes} minute${minutes > 1 ? "s" : ""}`
                         //    : `in less than a minute`;
                         const spokenText = `Next: ${text}, ${distanceFormatted}`;
-                        speechSynthesis.speak(new SpeechSynthesisUtterance(spokenText));
+                        speechSynthesis.speak(new SpeechSynthesisUtterance(spokenText));*/
                     }
                 }
                 updateInstructionList();
