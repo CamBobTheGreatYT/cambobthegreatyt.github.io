@@ -175,8 +175,25 @@ function beginTracking() {
         window.initialLocationMarker = null;
     }
 
-    const dummy = new SpeechSynthesisUtterance("Voice enabled");
+    document.getElementById("startBtn").style.display = "none";
+
+    const dummy = new SpeechSynthesisUtterance("Navigation started");
     speechSynthesis.speak(dummy);
+
+    if (routeSteps && routeSteps.length > 0 && userLocation) {
+        const step = routeSteps[stepIndex];
+        const text = step.maneuver.instruction || `${step.maneuver.type} on ${step.name || "road"}`;
+
+        const maneuverCoord = L.latLng(step.maneuver.location[1], step.maneuver.location[0]);
+        const userCoord = L.latLng(userLocation[0], userLocation[1]);
+        const distance = map.distance(userCoord, maneuverCoord);
+        const distanceFormatted = formatDistance(distance);
+
+        const spokenText = `In ${distanceFormatted}, ${text}`;
+        speechSynthesis.speak(new SpeechSynthesisUtterance(spokenText));
+    }
+
+    //speechSynthesis.speak(new SpeechSynthesisUtterance(`In ${distanceFormatted}, ${text}`));
 
     trackingId = navigator.geolocation.watchPosition(
         (pos) => {
@@ -263,7 +280,7 @@ function beginTracking() {
                 const prevDist = stepIndex === 0 ? 9999 : routeSteps[stepIndex - 1].distance;
                 const threshold = prevDist > 1609 ? 1609 : 321.87;
 
-                if (!alerted && distanceToTurn < threshold + 50 && distanceToTurn > threshold - 50) {
+                if (!alerted && distanceToTurn < threshold + 100 && distanceToTurn > threshold - 100) {
                     const step = routeSteps[stepIndex];
                     const text = step.maneuver.instruction || `${step.maneuver.type} on ${step.name || "road"}`;
                     const distanceFormatted = formatDistance(distanceToTurn);
@@ -280,7 +297,6 @@ function beginTracking() {
                     window.oneMileAlerted = false;
                     updateNextInstruction();
                     updateInstructionList();
-                    speechSynthesis.speak(new SpeechSynthesisUtterance(`In ${distanceFormatted}, ${text}`));
 
                     if (stepIndex < routeSteps.length) {
                         const nextStep = routeSteps[stepIndex];
@@ -440,28 +456,40 @@ function formatDistance(meters) {
 
 // Instruction list
 function updateInstructionList() {
-    const instructionList = document.getElementById("instructionList");
-    instructionList.innerHTML = "";
+    const list = document.getElementById("instructionList");
+    list.innerHTML = "";
 
-    routeSteps.slice(stepIndex, stepIndex + 3).forEach((step, i) => {
+    const maxStepsToShow = 3;
+    const startIndex = stepIndex;
+
+    for (let i = startIndex; i < Math.min(routeSteps.length, startIndex + maxStepsToShow); i++) {
+        const step = routeSteps[i];
         const text = step.maneuver.instruction || `${step.maneuver.type} on ${step.name || "road"}`;
-        const direction = step.maneuver.modifier || "straight";
 
-        // Real-time distance calculation from user to maneuver
-        let liveDistanceMeters = step.distance;
-        if (userLocation && step.maneuver.location) {
+        let distance;
+
+        if (i === startIndex) {
+            // 🧭 First item: distance from user to next maneuver
             const maneuverCoord = L.latLng(step.maneuver.location[1], step.maneuver.location[0]);
             const userCoord = L.latLng(userLocation[0], userLocation[1]);
-            liveDistanceMeters = map.distance(userCoord, maneuverCoord);
+            distance = map.distance(userCoord, maneuverCoord);
+        } else {
+            // 📍 Subsequent items: distance between maneuvers
+            const prevStep = routeSteps[i - 1];
+            const fromCoord = L.latLng(prevStep.maneuver.location[1], prevStep.maneuver.location[0]);
+            const toCoord = L.latLng(step.maneuver.location[1], step.maneuver.location[0]);
+            distance = map.distance(fromCoord, toCoord);
         }
 
-        const distanceFormatted = formatDistance(liveDistanceMeters);
+        const distanceFormatted = formatDistance(distance);
 
         const li = document.createElement("li");
-        li.textContent = `In ${distanceFormatted} → ${direction.toUpperCase()}: ${text}`;
-        instructionList.appendChild(li);
-    });
+        li.textContent = `In ${distanceFormatted} → ${text}`;
+        list.appendChild(li);
+    }
 }
+
+
 
 
 // Reset route
