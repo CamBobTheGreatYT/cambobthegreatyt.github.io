@@ -346,7 +346,7 @@ function beginTracking() {
                         }
 
                         const distanceFormatted = formatDistance(distanceToTurn);
-                        const spokenText = `Next, In ${distanceFormatted}, ${directionText} onto ${roadName}`;
+                        const spokenText = ` ${directionText} onto ${roadName}`; //"Next, In ${distanceFormatted}," ommited to give better instruction. i think
                         speechSynthesis.speak(new SpeechSynthesisUtterance(spokenText));
 
                         /*const nextStep = routeSteps[stepIndex];
