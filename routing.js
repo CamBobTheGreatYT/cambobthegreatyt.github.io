@@ -315,7 +315,12 @@ function beginTracking() {
                         default: directionText = step.maneuver.instruction || `${step.maneuver.type} on ${roadName}`;
                     }
 
-                    const distanceFormatted = formatDistance(distanceToTurn);
+                    const maneuverCoord = L.latLng(nextStep.maneuver.location[1], nextStep.maneuver.location[0]);
+                    const userCoord = L.latLng(userLocation[0], userLocation[1]);
+                    const distanceToNext = map.distance(userCoord, maneuverCoord);
+
+                    //make distanceFormatted use the distance to the next turn instead of current
+                    const distanceFormatted = formatDistance(distanceToNext);
                     const spokenText = `In ${distanceFormatted}, ${directionText} onto ${roadName}`;
                     speechSynthesis.speak(new SpeechSynthesisUtterance(spokenText));
                     alerted = true;
