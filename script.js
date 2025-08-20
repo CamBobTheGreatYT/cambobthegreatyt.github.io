@@ -12,25 +12,34 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let room = '';
+let username = '';
 
 function joinRoom() {
     room = document.getElementById('roomInput').value;
-    if (room) {
+    username = document.getElementById('usernameInput').value;
+    if (room && username) {
         document.getElementById('chat').style.display = 'block';
         db.ref(`rooms/${room}`).on('child_added', snapshot => {
-            addMessage(snapshot.val());
+            const msg = snapshot.val();
+            const sender = msg.sender === username ? 'You' : msg.sender;
+            addMessage(`${sender}: ${msg.text}`);
         });
     }
 }
+
 
 function sendMessage() {
     const input = document.getElementById('messageInput');
     const text = input.value;
     if (text) {
-        db.ref(`rooms/${room}`).push(`You: ${text}`);
+        db.ref(`rooms/${room}`).push({
+            sender: username,
+            text: text
+        });
         input.value = '';
     }
 }
+
 
 function addMessage(msg) {
     const messages = document.getElementById('messages');
