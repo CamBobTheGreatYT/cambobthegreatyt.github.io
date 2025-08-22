@@ -8,15 +8,26 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
-    <h1>Pigeon Chat 🕊️</h1>
-    <input id="usernameInput" placeholder="Enter your name">
-    <input id="roomInput" placeholder="Enter chat code">
-    <button onclick="joinRoom()">Join</button>
-    <div id="chat" style="display:none;">
-        <div id="messages"></div>
-        <input id="messageInput" placeholder="Type a message">
-        <button onclick="sendMessage()">Send</button>
+    <div id="mainContainer">
+        <h1>Pigeon Chat 🕊️</h1>
+        <div id="joinUI">
+            <input id="roomInput" placeholder="Enter chat code">
+            <input id="passwordInput" placeholder="Set or enter password" type="password">
+            <button onclick="joinRoom()">Join</button>
+        </div>
+        <div id="chat" style="display:none;">
+            <div id="messages"></div>
+            <div id="typingIndicator" style="text-align: center; font-style: italic;"></div>
+            <input id="messageInput" placeholder="Type a message">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+        <script src="script.js"></script>
+        <div id="colorButton" onclick="toggleColorPanel()">🎨</div>
+        <div id="colorPanel">
+            <label>Background: <input type="color" onchange="setColor('--bg-color', this.value)"></label>
+            <label>Text: <input type="color" onchange="setColor('--text-color', this.value)"></label>
+            <label>Accent: <input type="color" onchange="setColor('--accent-color', this.value)"></label>
+        </div>
     </div>
-    <script src="script.js"></script>
 </body>
 </html>
