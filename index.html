@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
 </head>
 <body>
     <div id="mainContainer">
@@ -18,10 +20,31 @@
         </div>
         <div id="chat" style="display:none;">
             <div id="messages"></div>
-            <div id="typingIndicator" style="text-align: center; font-style: italic;"></div>
-            <input id="messageInput" placeholder="Type a message">
-            <button onclick="sendMessage()">Send</button>
+            <div id="typingIndicator"></div>
+            <div class="inputRow">
+                <input id="messageInput" placeholder="Type a message">
+                <button id="sendBtn" onclick="sendMessage()">Send</button>
+                <div class="dropdown">
+                    <button class="dropbtn">＋</button>
+                    <div class="dropdown-content">
+                        <label>
+                            📁 Upload Photo
+                            <input type="file" id="photoInput" accept="image/*" onchange="sendPhoto(this.files[0])">
+                        </label>
+                        <button onclick="openCamera()">📷 Take Photo</button>
+                    </div>
+                </div>
+            </div>
+
+            <video id="cameraStream" autoplay playsinline style="display:none;"></video>
+            <button id="captureBtn" style="display:none;" onclick="capturePhoto()">Capture</button>
+            <button id="sendBtnPhoto" style="display:none;" onclick="sendCapturedPhoto()">Send</button>
+            <button id="cancelBtn" style="display:none;" onclick="closeCamera()">Cancel</button>
+            <canvas id="cameraCanvas" style="display:none;"></canvas>
+
         </div>
+
+
         <script src="script.js"></script>
         <div id="colorButton" onclick="toggleColorPanel()">🎨</div>
         <div id="colorPanel">

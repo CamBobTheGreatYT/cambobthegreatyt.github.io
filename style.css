@@ -30,6 +30,142 @@ body {
     box-sizing: border-box;
 }
 
+/* Row for input + buttons */
+.inputRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0.5em auto;
+}
+
+/* Message input takes most of the row */
+#messageInput {
+    flex: 1;
+    padding: 0.8em;
+    margin: 0.2em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+}
+
+/* Send button shorter */
+#sendBtn {
+    flex: 0 0 80px; /* fixed width */
+    margin: 0.2em;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.8em;
+    cursor: pointer;
+}
+
+/* Options dropdown button */
+.dropbtn {
+    flex: 0 0 50px; /* smaller width */
+    margin: 0.2em;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.8em;
+    cursor: pointer;
+}
+
+/* Dropdown content styling */
+.dropdown {
+    position: relative;
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    bottom: 110%; /* above the button */
+    right: 0;
+    background-color: #fff;
+    min-width: 180px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    z-index: 1;
+}
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+.dropdown-content button,
+.dropdown-content label {
+    background: none;
+    color: var(--accent-color);
+    padding: 0.6em 1em;
+    display: block;
+    width: 100%;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+}
+.dropdown-content input[type="file"] {
+    display: none;
+}
+
+
+
+/* Photo upload input */
+#photoInput {
+    background: none;
+    border: 2px dashed var(--accent-color);
+    color: var(--accent-color);
+    padding: 1em;
+    margin: 0.5em auto;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+}
+
+/* Camera stream preview */
+#cameraStream {
+    display: block;
+    margin: 1em auto;
+    max-width: 100%;
+    border: 2px solid var(--accent-color);
+    border-radius: 8px;
+}
+
+#captureBtn, #sendBtnPhoto, #cancelBtn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.8em;
+    margin: 0.5em;
+    width: 90%;
+    max-width: 200px;
+    cursor: pointer;
+}
+#cancelBtn {
+    background-color: #dc3545; /* red for cancel */
+}
+#cameraCanvas {
+    display: none;
+    margin: 1em auto;
+    max-width: 100%;
+    border: 2px solid var(--accent-color);
+    border-radius: 8px;
+}
+
+
+
+#messages img {
+    max-width: 200px;
+    border-radius: 8px;
+    margin: 0.5em auto;
+    display: block;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+
+
 /* Inputs and buttons */
 input, button {
     width: 90%;

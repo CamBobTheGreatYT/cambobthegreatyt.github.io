@@ -3,13 +3,14 @@ const firebaseConfig = {
     apiKey: "AIzaSyAPCH3LwCtz6b-rWaZfKLPh5hszP8CgbEs",
     authDomain: "pigeon-58e9a.firebaseapp.com",
     projectId: "pigeon-58e9a",
-    storageBucket: "pigeon-58e9a.firebasestorage.app",
+  storageBucket: "pigeon-58e9a.appspot.com",
     messagingSenderId: "989902009513",
     appId: "1:989902009513:web:beb040de26acf54fee65b8"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+const storage = firebase.storage(); // ✅ Add this line here
 
 let room = '';
 let username = '';
@@ -40,6 +41,104 @@ function joinRoom() {
         });
     }
 }
+
+function sendPhoto(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const dataUrl = e.target.result; // Base64 string
+        db.ref(`rooms/${room}/messages`).push({
+            sender: username,
+            photoBase64: dataUrl,
+            time: new Date().toISOString(),
+            readBy: [username]
+        });
+    };
+    reader.readAsDataURL(file);
+}
+
+
+function openCamera() {
+    const video = document.getElementById('cameraStream');
+    const captureBtn = document.getElementById('captureBtn');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            video.srcObject = stream;
+            video.style.display = 'block';
+            captureBtn.style.display = 'inline-block';
+
+            // Show cancel button too
+            const cancelBtn = document.getElementById('cancelBtn');
+            cancelBtn.style.display = 'inline-block';
+        })
+        .catch(err => alert("Camera access denied: " + err));
+}
+
+function capturePhoto() {
+    const video = document.getElementById('cameraStream');
+    const canvas = document.getElementById('cameraCanvas');
+    const context = canvas.getContext('2d');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Show the canvas preview
+    canvas.style.display = 'block';
+
+    // Hide capture, show send
+    document.getElementById('captureBtn').style.display = 'none';
+    document.getElementById('sendBtnPhoto').style.display = 'inline-block';
+}
+
+function sendCapturedPhoto() {
+    const canvas = document.getElementById('cameraCanvas');
+    const dataUrl = canvas.toDataURL('image/jpeg'); // Base64 string
+
+    db.ref(`rooms/${room}/messages`).push({
+        sender: username,
+        photoBase64: dataUrl,   // ✅ store Base64 directly
+        time: new Date().toISOString(),
+        readBy: [username]
+    });
+
+    closeCamera();
+}
+
+
+
+
+function closeCamera() {
+    const video = document.getElementById('cameraStream');
+    const stream = video.srcObject;
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+    video.srcObject = null;
+    video.style.display = 'none';
+
+    // Hide all buttons and canvas
+    document.getElementById('captureBtn').style.display = 'none';
+    document.getElementById('sendBtnPhoto').style.display = 'none';
+    document.getElementById('cancelBtn').style.display = 'none';
+    document.getElementById('cameraCanvas').style.display = 'none';
+}
+
+
+function closeCamera() {
+    const video = document.getElementById('cameraStream');
+    const stream = video.srcObject;
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+    video.srcObject = null;
+    video.style.display = 'none';
+
+    document.getElementById('captureBtn').style.display = 'none';
+    document.getElementById('cancelBtn').style.display = 'none';
+}
+
 
 function startChat() {
     document.getElementById('joinUI').style.display = 'none';
@@ -169,7 +268,6 @@ function renderMessages() {
 
 function addMessage(msgObj, key, showSeen) {
     const messages = document.getElementById('messages');
-
     const wrapper = document.createElement('div');
     wrapper.id = `msg-${key}`;
     wrapper.style.marginBottom = '8px';
@@ -178,11 +276,29 @@ function addMessage(msgObj, key, showSeen) {
     const sender = msgObj.sender === username ? 'You' : msgObj.sender;
 
     const messageLine = document.createElement('div');
-    messageLine.innerHTML = `<span style="color: gray;">[${time}]</span> <strong>${sender}:</strong> ${msgObj.text}`;
+    messageLine.innerHTML = `<span style="color: gray;">[${time}]</span> <strong>${sender}:</strong>`;
     wrapper.appendChild(messageLine);
 
+    // ✅ Show text or photo
+    if (msgObj.text) {
+        const textNode = document.createElement('span');
+        textNode.textContent = " " + msgObj.text;
+        messageLine.appendChild(textNode);
+    }
+    if (msgObj.photoBase64) {
+        const img = document.createElement('img');
+        img.src = msgObj.photoBase64;
+        img.style.maxWidth = '200px';
+        img.style.display = 'block';
+        img.style.marginTop = '5px';
+        img.style.borderRadius = '8px';
+        wrapper.appendChild(img);
+    }
+
+
+    // ✅ Seen receipts
     if (showSeen && msgObj.sender === username) {
-        const others = msgObj.readBy.filter(name => name !== username);
+        const others = (msgObj.readBy || []).filter(name => name !== username);
         if (others.length > 0) {
             const readLine = document.createElement('div');
             readLine.className = 'read-receipt';
@@ -199,15 +315,44 @@ function addMessage(msgObj, key, showSeen) {
 }
 
 
+
 function updateMessageDisplay(key, msgObj, showSeen) {
     const wrapper = document.querySelector(`#msg-${key}`);
     if (!wrapper) return;
 
-    const oldReceipt = wrapper.querySelector('.read-receipt');
-    if (oldReceipt) wrapper.removeChild(oldReceipt);
+    // Clear existing content
+    wrapper.innerHTML = '';
 
+    const time = formatTimestamp(msgObj.time);
+    const sender = msgObj.sender === username ? 'You' : msgObj.sender;
+
+    // Header line with timestamp + sender
+    const messageLine = document.createElement('div');
+    messageLine.innerHTML = `<span style="color: gray;">[${time}]</span> <strong>${sender}:</strong>`;
+    wrapper.appendChild(messageLine);
+
+    // ✅ Show text if present
+    if (msgObj.text) {
+        const textNode = document.createElement('span');
+        textNode.textContent = " " + msgObj.text;
+        messageLine.appendChild(textNode);
+    }
+
+    // ✅ Show photo if present
+    if (msgObj.photoBase64) {
+        const img = document.createElement('img');
+        img.src = msgObj.photoBase64;
+        img.style.maxWidth = '200px';
+        img.style.display = 'block';
+        img.style.marginTop = '5px';
+        img.style.borderRadius = '8px';
+        wrapper.appendChild(img);
+    }
+
+
+    // ✅ Seen receipts
     if (showSeen && msgObj.sender === username) {
-        const others = msgObj.readBy.filter(name => name !== username);
+        const others = (msgObj.readBy || []).filter(name => name !== username);
         if (others.length > 0) {
             const readLine = document.createElement('div');
             readLine.className = 'read-receipt';
@@ -219,6 +364,7 @@ function updateMessageDisplay(key, msgObj, showSeen) {
         }
     }
 }
+
 
 
 
